@@ -1,25 +1,20 @@
 from datasets import EqualityDataset, PremackDataset, PremackDatasetIntermediate
 from itertools import product
 import numpy as np
+import os
 import pandas as pd
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import classification_report, accuracy_score
-import sklearn.neural_network._base as nn_base
+from sklearn.metrics import accuracy_score
 import warnings
 from tf_tree import TfTree
 
-pd.set_option('max_colwidth', 999)
 
-pd.set_option('display.max_rows', 999)
-
-pd.set_option('display.max_columns', 999)
 
 def run():
     n_trials = 20
     data = []
-    alphas = [0.001, 0.01,0.1,1]#[0.1, 0.5, 1.0, 2.0] # [0.0001, 0.001, 0.01, 0.1, 0.5, 1.0, 2.0]
+    alphas = [0.001, 0.01,0.1,1]
     lr = [0.01, 0.001, 0.0001]
-    embed_dims = [2, 10, 25, 50, 100]#, 200, 300]
+    embed_dims = [2, 10, 25, 50, 100]
 
     grid = (embed_dims, alphas)
     rez = []
@@ -148,19 +143,7 @@ def run():
     return pd.DataFrame(data)
 
 
-def get_hidden_reps(X, model):
-    W = model.coefs_[0]
-    b = model.intercepts_[0]
-    activation = model.activation
-    f = getattr(nn_base, activation)
-    h = f(X.dot(W) + b)
-    return h
+if __name__ == '__main__':
 
-def get_premack_hidden_reps(X, model):
-    left, right = zip(*X)
-    h_left = get_hidden_reps(np.array(left), model)
-    h_right = get_hidden_reps(np.array(right), model)
-    return np.concatenate((h_left, h_right), axis=1)
-
-df = run()
-df.to_csv("results/tensorflowresults.csv", index=None)
+    df = run()
+    df.to_csv(os.path.join("results", "inputasoutput-results.csv"), index=None)

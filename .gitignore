@@ -1,0 +1,11 @@
+
+*.pyc
+
+*.ipynb_checkpoints*
+relational-learning-cogsci2020-supplement.log
+
+*.aux
+
+*.synctex.gz
+
+*.toc

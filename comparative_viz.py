@@ -167,19 +167,3 @@ class ComparativeViz:
         #lower = mu - lower
         #upper = upper - mu
         return lower, upper
-
-
-if __name__ == '__main__':
-
-    df = pd.read_csv(os.path.join("results", "pretrain_probs-experiments.csv"))
-
-    viz = ComparativeViz(
-        df,
-        experiment_type="pretrain_probs",
-        output_dirname="tmp",
-        fixed_col_val=50,
-        errorbars=False)
-
-    #viz.create_all()
-
-    print(viz.create())
