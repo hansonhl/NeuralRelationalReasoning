@@ -29,7 +29,7 @@
 \newcommand{\hiddencolor}{blue!40}
 \newcommand{\hiddencolortwo}{orange!40}
 \newcommand{\colorlabel}{green!40}
-\newcommand{\compare}{cosine}
+\newcommand{\compare}{\emph{Euclidean}}
 
 \newcommand{\softmax}{\mathbf{softmax}}
 \DeclareMathOperator{\ReLU}{ReLU}
@@ -177,7 +177,7 @@ The specific model we use for this is as follows:
   y_{t} &= h_{t}W + b\label{eq:lstm-predict}
 \end{align}
 %
-for $t > 0$, with $h_{0} = \mathbf{0}$. $\LSTM$ is a long short-term memory cell. \Figref{fig:reps:sequence} depicts this model. At each timestep $t$, a vector $y_{t}$ (red) is predicted based on the input representation at $t$ (gray) and the hidden representation at $t$ (purple). During training, this is compared with the actual vector for timestep $t+1$ (green). During testing, the predicted vector $y_{i}$ is compared with every item in the union of the train and assessment vocabularies, and the closest vector (according to cosine similarity) is taken to be the prediction. This vector is then used as the input for timestep $t+1$.
+for $t > 0$, with $h_{0} = \mathbf{0}$. $\LSTM$ is a long short-term memory cell. \Figref{fig:reps:sequence} depicts this model. At each timestep $t$, a vector $y_{t}$ (red) is predicted based on the input representation at $t$ (gray) and the hidden representation at $t$ (purple). During training, this is compared with the actual vector for timestep $t+1$ (green). During testing, the predicted vector $y_{i}$ is compared with every item in the union of the train and assessment vocabularies, and the closest vector (according to Euclidean distance) is taken to be the prediction. This vector is then used as the input for timestep $t+1$.
 
 \begin{figure}[H]
   \centering
@@ -609,15 +609,15 @@ With this fact, we can show that if the neural network correctly classifies any 
 %   \label{fig:analyticLM}
 % \end{figure}
 
-Here are the parameters of an long short term memory recursive neural network (LSTM)
-
+Here are the parameters of a long short term memory recursive neural network (LSTM):
+%
 \[f_t = \sigma(x_t W_f  + h_{t-1} U_f  + b_f) \]
 \[i_t = \sigma(x_t W_i  + h_{t-1} U_i + b_i) \]
 \[o_t = \sigma(x_t W_o +  h_{t-1} U_o + b_o)\]
 \[c_t = f_t \circ c_{t-1} + i_t \circ \texttt{ReLu}(x_tW_c + h_{t-1}U_c + b_c) \]
 \[h_t = \texttt{ReLu}(o_t \circ (c_t))\]
 \[y_t = h_tV\]
-
+%
 where if $n$ is the representation size and $d$ is the network hidden dimension then $x_t \in \mathbb{R}^n, f_t, i_t, o_t,  h_t, c_t \in \mathbb{R}^d, W \in \mathbb{R}^{n \times d}, U \in \mathbb{R}^{d \times d}, V \in \mathbb{R}^{d \times n}, b \in \mathbb{R}^d$ and $\sigma$ is the sigmoid function. The initial hidden state $h_0$ and initial cell state $c_0$ are both set to be the zero vector. We say that an LSTM model with specified parameters has learned to produce ABA sequences if the following holds: when the network is seeded with some entity vector representation as its first input, $x_1$, then the output $y_1$ is not equal to $x_1$ and at the next time step the output $y_2$ is equal to $x_1$.
 
 We let $d = 2n + 1$ and assign the following parameters which provide an analytic solution to producing ABA sequences:
