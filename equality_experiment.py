@@ -23,7 +23,7 @@ class EqualityExperiment:
             alphas=[0.00001, 0.0001, 0.001],
             learning_rates=[0.0001, 0.001, 0.01],
             test_set_class_size=250,
-            pretrain_tree = True):
+            pretrain_tree = False):
 
         self.dataset_class = dataset_class
         self.n_hidden = n_hidden
