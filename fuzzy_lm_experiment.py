@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import random
 import string
+import torch.nn as nn
 from torch_fuzzy_lm import FuzzyPatternLM, START_SYMBOL, END_SYMBOL
 
 
@@ -41,6 +42,7 @@ class FuzzyPatternLMExperiment:
             n_trials=10,
             embed_dim=50,
             hidden_dim=50,
+            rnn_cell_class=nn.LSTM,
             num_layers=1,
             dropout=0,
             max_iter=10,
@@ -52,6 +54,7 @@ class FuzzyPatternLMExperiment:
         self.n_trials = n_trials
         self.embed_dim = embed_dim
         self.hidden_dim = hidden_dim
+        self.rnn_cell_class = rnn_cell_class
         self.max_iter = max_iter
         self.eta = eta
         self.num_layers = num_layers
@@ -88,6 +91,7 @@ class FuzzyPatternLMExperiment:
                 vocab=self.full_vocab,
                 embed_dim=self.embed_dim,
                 hidden_dim=self.hidden_dim,
+                rnn_cell_class=self.rnn_cell_class,
                 max_iter=self.max_iter,
                 num_layers=self.num_layers,
                 dropout=self.dropout,

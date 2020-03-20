@@ -12,6 +12,7 @@ class FuzzyPatternModule(nn.Module):
             vocab_size,
             embed_dim,
             hidden_dim,
+            rnn_cell_class,
             num_layers=1,
             dropout=0,
             output_activation=None):
@@ -19,9 +20,10 @@ class FuzzyPatternModule(nn.Module):
         self.vocab_size = vocab_size
         self.embed_dim = embed_dim
         self.hidden_dim = hidden_dim
+        self.rnn_cell_class = rnn_cell_class
         self.num_layers = num_layers
         self.dropout = dropout
-        self.rnn = nn.LSTM(
+        self.rnn = self.rnn_cell_class(
             self.embed_dim,
             self.hidden_dim,
             num_layers=self.num_layers,
@@ -45,6 +47,7 @@ class FuzzyPatternLM:
             vocab,
             embed_dim,
             hidden_dim,
+            rnn_cell_class=nn.LSTM,
             num_layers=1,
             alpha=0,
             dropout=0,
@@ -58,6 +61,7 @@ class FuzzyPatternLM:
         self.vocab_size = len(vocab)
         self.embed_dim = embed_dim
         self.hidden_dim = hidden_dim
+        self.rnn_cell_class = rnn_cell_class
         self.num_layers = num_layers
         self.alpha = alpha
         self.dropout = dropout
@@ -70,6 +74,7 @@ class FuzzyPatternLM:
             vocab_size=self.vocab_size,
             embed_dim=self.embed_dim,
             hidden_dim=self.hidden_dim,
+            rnn_cell_class=self.rnn_cell_class,
             output_activation=self.output_activation,
             num_layers=self.num_layers,
             dropout=self.dropout)
