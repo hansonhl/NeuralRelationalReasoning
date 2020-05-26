@@ -1,10 +1,15 @@
 from itertools import product
 import numpy as np
+import os
 import pandas as pd
 import random
+from relu_lstm import ReLULSTM
 import string
+import time
+from torch_rep_learner import RepLearner
 import torch.nn as nn
 from torch_fuzzy_lm import FuzzyPatternLM, START_SYMBOL, END_SYMBOL
+import utils
 
 
 class Dataset:
@@ -37,26 +42,30 @@ class DatasetABA(Dataset):
 
 class FuzzyPatternLMExperiment:
     def __init__(self,
-            dataset_class,
-            pretrain=False,
-            n_trials=10,
-            embed_dim=50,
-            hidden_dim=50,
-            rnn_cell_class=nn.LSTM,
+            dataset_class=DatasetABA,
+            n_trials=20,
+            embed_dims=[2, 10, 25, 50, 100],
+            hidden_dims=[2, 10, 25, 50, 100],
+            learning_rates=[0.0001, 0.001, 0.01],
+            alphas=[0.00001, 0.0001, 0.001],
+            rnn_cell_class=ReLULSTM,
             num_layers=1,
+            pretrain_tasks=None,
+            pretrain_max_iter=10,
             dropout=0,
-            max_iter=10,
-            eta=0.05,
-            train_vocab_size=100,
+            max_iter=150,
+            train_vocab_size=20,
             test_vocab=list(string.ascii_letters)):
         self.dataset_class = dataset_class
-        self.pretrain = pretrain
         self.n_trials = n_trials
-        self.embed_dim = embed_dim
-        self.hidden_dim = hidden_dim
+        self.embed_dims = embed_dims
+        self.hidden_dims = hidden_dims
         self.rnn_cell_class = rnn_cell_class
+        self.pretrain_tasks = pretrain_tasks
+        self.pretrain_max_iter = pretrain_max_iter
         self.max_iter = max_iter
-        self.eta = eta
+        self.learning_rates = learning_rates
+        self.alphas = alphas
         self.num_layers = num_layers
         self.dropout = dropout
         self.train_vocab_size = train_vocab_size
@@ -66,47 +75,101 @@ class FuzzyPatternLMExperiment:
         self.full_vocab = self.train_vocab + self.test_vocab
         self.full_vocab += [START_SYMBOL, END_SYMBOL]
 
-    def pretrain_model(self, model):
-        X_train, y_train = self.generate_equality_dataset(self.train_vocab)
-        model.fit(X_train, y_train)
-        return model
-
-    @staticmethod
-    def generate_equality_dataset(vocab):
-        X_neg = [[START_SYMBOL, w1, w2, END_SYMBOL] for w1, w2 in product(vocab, repeat=2) if w1 != w2]
-        X_pos = [[START_SYMBOL, w, w, END_SYMBOL] for w in vocab]
-        x = int(len(X_neg) / len(X_pos))
-        X_pos *= x
-        y_pos = [1] * len(X_pos)
-        y_neg = [0] * len(X_neg)
-        X = X_pos + X_neg
-        y = y_pos + y_neg
-        return X, y
+        grid = (self.embed_dims, self.hidden_dims, self.alphas, self.learning_rates)
+        self.grid = list(product(*grid))
 
     def run(self):
         data = []
-        for trial in range(1, self.n_trials+1):
 
-            model = FuzzyPatternLM(
-                vocab=self.full_vocab,
-                embed_dim=self.embed_dim,
-                hidden_dim=self.hidden_dim,
-                rnn_cell_class=self.rnn_cell_class,
-                max_iter=self.max_iter,
-                num_layers=self.num_layers,
-                dropout=self.dropout,
-                warm_start=True,
-                eta=self.eta)
+        print(f"Grid size: {len(self.grid)} * {self.n_trials}; "
+              f"{len(self.grid)*self.n_trials} experiments")
 
-            if self.pretrain:
-                model = self.pretrain_model(model)
+        for embed_dim, hidden_dim, alpha, lr in self.grid:
 
-            model.fit(self.dataset.train, eval_func=self.evaluate)
-            preds = model.results.copy()
-            for p in preds:
-                p.update({'trial': trial})
-            data += preds
-        return data
+            scores = []
+
+            print(f"Running trials for embed_dim={embed_dim} hidden_dim={hidden_dim} "
+                  f"alpha={alpha} learning_rate={lr} ...", end=" ")
+
+            start = time.time()
+
+            for trial in range(1, self.n_trials+1):
+
+                if self.pretrain_tasks is not None:
+                    embedding = self._create_pretrained_embedding(embed_dim)
+                else:
+                    embedding = None
+
+                model = FuzzyPatternLM(
+                    vocab=self.full_vocab,
+                    embed_dim=embed_dim,
+                    hidden_dim=hidden_dim,
+                    rnn_cell_class=self.rnn_cell_class,
+                    max_iter=self.max_iter,
+                    num_layers=self.num_layers,
+                    embedding=embedding,
+                    dropout=self.dropout,
+                    warm_start=True,
+                    eta=lr)
+
+                model.fit(self.dataset.train, eval_func=self.evaluate)
+
+                preds = model.results.copy()
+
+                scores.append(preds[-1]['accuracy'])
+
+                for p in preds:
+                    p['train_size'] = p['iteration'] * len(self.dataset.train)
+                    p.update({
+                        'trial': trial,
+                        'embed_dim': embed_dim,
+                        'hidden_dim': hidden_dim,
+                        'train_vocab_size': self.train_vocab_size,
+                        'alpha': alpha,
+                        'learning_rate': lr,
+                        'max_iter': self.max_iter})
+
+                data += preds
+
+            elapsed_time = round(time.time() - start, 0)
+
+            print(f"mean: {round(np.mean(scores), 2)}; max: {max(scores)}; took {elapsed_time} secs")
+
+        df = pd.DataFrame(data)
+
+        df.drop(['correct', 'incorrect', 'n_correct', 'n_incorrect'], axis=1, inplace=True)
+
+        self.data_df = df
+
+        return self.data_df
+
+    def to_csv(self, output_dirname="results"):
+        base_output_filename = "fuzzy-lm-vocab{}".format(self.train_vocab_size)
+        if 'LSTM' in self.rnn_cell_class.__class__.__name__:
+            base_output_filename += "-lstm"
+        if self.pretrain_tasks is not None:
+            base_output_filename += "-pretrain-{}tasks".format(self.pretrain_tasks)
+        base_output_filename += ".csv"
+        self.data_df.to_csv(
+            os.path.join(output_dirname, base_output_filename),
+            index=None)
+
+    def _create_pretrained_embedding(self, embed_dim):
+        vocab_size = len(self.full_vocab)
+        mod = RepLearner(
+            vocab_size=vocab_size,
+            embed_dim=embed_dim,
+            hidden_dim=embed_dim,
+            n_tasks=self.pretrain_tasks,
+            max_iter=self.pretrain_max_iter)
+        X = list(range(vocab_size))
+        ys = []
+        for _ in range(self.pretrain_tasks):
+            y = np.random.choice((0, 1), size=vocab_size, replace=True)
+            ys.append(y)
+        ys = list(zip(*ys))
+        mod.fit(X, ys)
+        return mod.embedding
 
     def evaluate(self, model, verbose=False):
         all_preds = set()

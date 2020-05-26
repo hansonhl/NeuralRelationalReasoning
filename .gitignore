@@ -9,3 +9,13 @@ relational-learning-cogsci2020-supplement.log
 *.synctex.gz
 
 *.toc
+
+*.bbl
+
+*.blg
+
+*.log
+
+*.out
+
+*.rel
