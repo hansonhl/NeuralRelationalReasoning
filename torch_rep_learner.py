@@ -44,22 +44,24 @@ class RepLearner:
             vocab_size,
             embed_dim,
             hidden_dim,
-            output_dim=2,
+            output_dims=[2,2,2],
             n_tasks=3,
             embedding=None,
             freeze_embedding=False,
             batch_size=128,
             eta=0.01,
             max_iter=100,
+            regression_multiplier=4,
             device=None):
         self.vocab_size = vocab_size
         self.embed_dim = embed_dim
         self.hidden_dim = hidden_dim
-        self.output_dim = output_dim
+        self.output_dims = output_dims
         self.n_tasks = n_tasks
         self.embedding = embedding
         self.freeze_embedding = freeze_embedding
         self.batch_size = batch_size
+        self.regression_multiplier = regression_multiplier
         self.eta = eta
         self.max_iter = max_iter
         if device is None:
@@ -71,8 +73,8 @@ class RepLearner:
             vocab_size, embed_dim, hidden_dim,
             embedding=embedding,
             freeze_embedding=self.freeze_embedding)
-        self.models = [RepTaskModel(self.hidden_dim, self.embedding_model, self.output_dim)
-                       for _ in range(n_tasks)]
+        self.models = [RepTaskModel(self.hidden_dim, self.embedding_model, self.output_dims[i])
+                       for i in range(n_tasks)]
         self.embedding = self.embedding_model.embedding.weight.detach().cpu().numpy()
 
     def fit(self, X, y):
@@ -89,17 +91,30 @@ class RepLearner:
             model.train()
         self.optimizers = [torch.optim.Adam(mod.parameters(), lr=self.eta)
                            for mod in self.models]
-        loss = nn.CrossEntropyLoss()
+        losses = []
+        #When an output_dim is 1, we use a linear regression loss functions
+        for output_dim in self.output_dims:
+            if output_dim == 1:
+                losses.append(nn.MSELoss())
+            else:
+                losses.append(nn.CrossEntropyLoss())
         for iteration in range(1, self.max_iter+1):
             epoch_error = 0.0
             for batch in dataloader:
                 X_batch = batch[0].to(self.device)
                 ys_batch = batch[1: ]
                 errs = []
-                for y_batch, mod in zip(ys_batch, self.models):
+                for y_batch, mod, loss,output_dim in zip(ys_batch, self.models, losses,self.output_dims):
                     y_batch = y_batch.to(self.device)
                     preds = mod(X_batch)
-                    errs.append(loss(preds, y_batch))
+                    if output_dim ==1:
+                        preds = torch.reshape(preds, (min(self.batch_size,self.vocab_size),))
+                        y_batch = torch.tensor(y_batch, dtype=torch.float)
+                        l = self.regression_multiplier*loss(preds, y_batch)
+                    else:
+                        y_batch = torch.tensor(y_batch, dtype=torch.long)
+                        l = loss(preds, y_batch)
+                    errs.append(l)
                 epoch_error += sum(errs)
                 for opt, err in zip(self.optimizers, errs):
                     opt.zero_grad()
@@ -126,8 +141,10 @@ class RepLearner:
             X = torch.tensor(X)
             X = X.to(device)
             preds = []
-            for model in self.models:
+            for model,output_dim in zip(self.models,self.output_dims):
                 p = model(X)
+                if output_dim==1:
+                    preds.append(p)
                 p = torch.softmax(p, dim=1).cpu().numpy()
                 preds.append(p)
         # Return the model to the original device:
@@ -135,5 +152,10 @@ class RepLearner:
         return preds
 
     def predict(self, X):
+        result = []
         probs = self.predict_proba(X)
-        return list(zip(*[p.argmax(axis=1) for p in probs]))
+        for prob,output_dim in zip(probs,self.output_dims):
+            if output_dim == 1:
+                result.append(prob)
+            result.append(prob.argmax(axis=1))
+        return result
