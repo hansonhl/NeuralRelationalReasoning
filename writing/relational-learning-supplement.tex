@@ -1,3 +1,12 @@
+\documentclass[9pt,twoside,lineno]{pnas-new}
+% Use the lineno option to display guide line numbers if required.
+
+\templatetype{pnassupportinginfo}
+
+\title{Your main manuscript title}
+\author{Author1, Author2 and Author3 (complete author list)}
+\correspondingauthor{Corresponding Author name.\\E-mail: author.two@email.com}
+
 \newcommand{\inputcolor}{black!20}
 \newcommand{\outputcolor}{red!40}
 \newcommand{\hiddencolor}{blue!40}
@@ -6,7 +15,15 @@
 \newcommand{\compare}{\emph{Euclidean}}
 
 
-\appendix
+\begin{document}
+
+\maketitle
+
+%% Adds the main heading for the SI text. Comment out this line if you do not have any supporting information text.
+\SItext
+
+
+% \appendix
 
 
 \section{Model figures}
@@ -812,3 +829,5 @@ In \secref{sec:modular}, we showed that pretraining an entire basic equality net
   \caption{Results for the hierarchical same--different task for a model in which both the input representations and the basic equality network are pretrained. The `no pretrain' model is the best one from \figref{fig:premack-pretraining-results} (25-dimensional embeddings, 100-dimensional hidden representations). The input-pretrained models use this same configuration.}
   \label{fig:double-pretrain}
 \end{figure}
+
+\end{document}
