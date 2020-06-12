@@ -8,7 +8,6 @@
 \usepackage{tikz}
 \usetikzlibrary{decorations.pathreplacing,positioning, fit, arrows.meta, shapes}
 \usetikzlibrary{shapes}
-\usepackage{natbib}
 \usepackage{subcaption}
 \usepackage{caption}
 \usepackage{pgfplots}
@@ -21,6 +20,7 @@
 
 %=====================================================================
 %============================= citations =============================
+
 
 % Flexible sec/fig/tbl/def cross-refs.
 \newcommand{\Secref}[1]{Section~\ref{#1}}
@@ -80,10 +80,13 @@
 \newcommand{\negcell}[1]{\fcolorbox{white}{superlightgray}{#1}}
 
 
-\newcommand{\update}[1]{{\color{darkblue}#1}}
+% \newcommand{\update}[1]{{\color{darkblue}#1}}
+% \newcommand{\updatea}[1]{{\color{darkred}#1}}
+% \newcommand{\updateb}[1]{{\color{ourgreen}#1}}
 
-\newcommand{\updatea}[1]{{\color{darkred}#1}}
-\newcommand{\updateb}[1]{{\color{ourgreen}#1}}
+\newcommand{\update}[1]{#1}
+\newcommand{\updatea}[1]{#1}
+\newcommand{\updateb}[1]{#1}
 
 %=====================================================================
 %================================ math ===============================
