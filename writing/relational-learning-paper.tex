@@ -1,154 +1,22 @@
-\documentclass[9pt,twocolumn,twoside,lineno]{pnas-new}
-% Use the lineno option to display guide line numbers if required.
+% Use this documentclass for the PNAS style:
+% \documentclass[9pt,twocolumn,twoside,lineno]{pnas-new}
 
-\templatetype{pnasresearcharticle} % Choose template
-% {pnasresearcharticle} = Template for a two-column research article
-% {pnasmathematics} %= Template for a one-column mathematics article
-% {pnasinvited} %= Template for a PNAS invited submission
-
-%=====================================================================
-%============================ our packages ===========================
-
-\usepackage{color}
-\definecolor{black}{rgb}{0,0,0}
-% \usepackage[colorlinks, linkcolor=black, urlcolor=black, citecolor=black]{hyperref}
-\usepackage{amsmath}
-\usepackage{amsthm}
-\usepackage{tikz}
-\usetikzlibrary{decorations.pathreplacing,positioning, fit, arrows.meta, shapes}
-\usetikzlibrary{shapes}
-\usepackage{natbib}
-\usepackage{subcaption}
-\usepackage{caption}
-\usepackage{pgfplots}
-\usepackage{booktabs}
-\usepackage{xcolor}
-\usepackage{colortbl}
-\usepackage{multirow}
-\usepackage{hyperref}
-\usepackage{float}
-
-%=====================================================================
-%============================= citations =============================
-
-% Flexible sec/fig/tbl/def cross-refs.
-\newcommand{\Secref}[1]{Section~\ref{#1}}
-\newcommand{\secref}[1]{Section~\ref{#1}}
-\newcommand{\dashsecref}[2]{Sections~\ref{#1}--\ref{#2}}
-
-\newcommand{\Defref}[1]{Definition~\ref{#1}}
-\newcommand{\defref}[1]{Definition~\ref{#1}}
-\newcommand{\Defrefc}[2]{\Defref{#1}, clause~\ref{#2}}
-\newcommand{\defrefc}[2]{\defref{#1}, clause~\ref{#2}}
-
-\newcommand{\Figref}[1]{Figure~\ref{#1}}
-\newcommand{\figref}[1]{Figure~\ref{#1}}
-\newcommand{\dashfigref}[2]{Figures~\ref{#1}--\ref{#2}}
-\newcommand{\Tabref}[1]{Table~\ref{#1}}
-\newcommand{\tabref}[1]{Table~\ref{#1}}
-
-\newcommand{\Appref}[1]{Appendix~\ref{#1}}
-\newcommand{\appref}[1]{Appendix~\ref{#1}}
-
-% In-text citations
-\newcommand{\posscitet}[1]{\citeauthor{#1}'s~(\citeyear{#1})}
-\newcommand{\sposscitet}[1]{\citeauthor{#1}'~(\citeyear{#1})}
-\newcommand{\possciteauthor}[1]{\citeauthor{#1}'s}
-\newcommand{\spossciteauthor}[1]{\citeauthor{#1}'}
-\newcommand{\pgposscitet}[2]{\citeauthor{#1}'s~(\citeyear{#1}:~#2)}
-\newcommand{\secposscitet}[2]{\citeauthor{#1}'s~(\citeyear{#1}:~$\S$#2)}
-\newcommand{\pgcitealt}[2]{\citealt{#1}:~#2}
-\newcommand{\seccitealt}[2]{\citealt{#1}:~$\S$#2}
-\newcommand{\pgcitep}[2]{(\citealt{#1}:~#2)}
-\newcommand{\seccitep}[2]{(\citealt{#1}:~$\S$#2)}
-\newcommand{\pgcitet}[2]{\citeauthor{#1}~(\citeyear{#1}:~#2)}
-\newcommand{\seccitet}[2]{\citeauthor{#1}~(\citeyear{#1}:~$\S$#2)}
-
-% Examples:
-\newcommand{\eg}[1]{(\ref{#1})}
-\newcommand{\dasheg}[2]{\eg{#1}--\eg{#2}}
-\newcommand{\subeg}[2]{(\ref{#1}\ref{#2})}
-\newcommand{\dblsubeg}[3]{(\ref{#1}\ref{#2},~\ref{#3})}
-\newcommand{\dashsubeg}[3]{(\ref{#1}\ref{#2}--\ref{#3})}
-
-%=====================================================================
-%========================= font manipulation =========================
-
-\newcommand{\word}[1]{\emph{#1}}
-\newcommand{\tech}[1]{\emph{#1}}
-\newcommand{\highlight}[1]{\textbf{#1}}
-
-\newcommand{\blue}[1]{{\color{blue}#1}}
-
-\definecolor{ourgreen}{HTML}{4D8951}
-\definecolor{darkblue}{HTML}{0499CC}
-\definecolor{darkred}{HTML}{8B0000}
-\definecolor{superlightgray}{HTML}{B8B8B8}
-
-\newcommand{\poscell}[1]{\fcolorbox{white}{ourgreen}{#1}}
-\newcommand{\negcell}[1]{\fcolorbox{white}{superlightgray}{#1}}
+% This is for NeurIPS style:
+\documentclass{article}
 
 
-\newcommand{\update}[1]{{\color{darkblue}#1}}
+\makeatletter
+\@ifclassloaded{pnas-new}
+{
+  \input{pre-pnas}
+  \newcommand{\papermode}{pnas}
+}
+{
+  \input{pre-arxiv}
+  \newcommand{\papermode}{arxiv}
+}
+\makeatother
 
-\newcommand{\updatea}[1]{{\color{darkred}#1}}
-\newcommand{\updateb}[1]{{\color{ourgreen}#1}}
-
-%=====================================================================
-%================================ math ===============================
-
-\newcommand{\softmax}{\mathbf{softmax}}
-\DeclareMathOperator{\ReLU}{ReLU}
-\newcommand{\identity}{\mathbb{I}}
-\newcommand{\LSTM}{\textbf{LSTM}}
-\newcommand{\wupdate}{\mathrel{{+}{=}}}
-
-%=====================================================================
-%=====================================================================
-
-
-\title{Relational reasoning and generalization using non-symbolic neural networks}
-
-% Use letters for affiliations, numbers to show equal authorship (if applicable) and to indicate the corresponding author
-\author[a,1]{Atticus Geiger}
-\author[b]{Alexandra Carstensen}
-\author[b]{Michael C.~Frank}
-\author[a]{Christopher Potts}
-
-\affil[a]{Department of Linguistics, Stanford University}
-\affil[b]{Department of Psychology, Stanford University}
-
-% Please give the surname of the lead author for the running footer
-\leadauthor{Geiger}
-
-% Please add here a significance statement to explain the relevance of your work
-\significancestatement{Authors must submit a 120-word maximum statement about the significance of their research paper written at a level understandable to an undergraduate educated scientist outside their field of speciality. The primary goal of the Significance Statement is to explain the relevance of the work in broad context to a broad readership. The Significance Statement appears in the paper itself and is required for all research papers.}
-
-% Please include corresponding author, author contribution and author declaration information
-\authorcontributions{Please provide details of author contributions here.}
-\authordeclaration{Please declare any conflict of interest here.}
-% \equalauthors{\textsuperscript{1}A.O.(Author One) and A.T. (Author Two) contributed equally to this work (remove if not applicable).}
-\correspondingauthor{\textsuperscript{1}To whom correspondence should be addressed. E-mail: author.two\@email.com}
-
-% Keywords are not mandatory, but authors are strongly encouraged to provide them. If provided, please include two to five keywords, separated by the pipe symbol, e.g:
-\keywords{Keyword 1 $|$ Keyword 2 $|$ Keyword 3 $|$ ...}
-
-\begin{abstract}
-Humans have a remarkable capacity to reason about abstract relational structures, an ability that may support some of the most impressive, human-unique cognitive feats. Because equality (or identity) is a simple and ubiquitous relational operator, equality reasoning has been a key case study for the broader question of abstract relational reasoning. This paper revisits the question of whether equality can be learned by neural networks that do not encode explicit symbolic structure. Earlier work arrived at a negative answer to this question, but that result holds only for a particular class of hand-crafted feature representations. In our experiments, we assess out-of-sample generalization of equality using both arbitrary representations and representations that have been pretrained on separate tasks to imbue them with abstract structure. In this setting, even simple neural networks are able to learn basic equality with relatively little training data. In a second case study, we show that sequential equality problems (learning ABA sequences) can be solved with only positive training instances. Finally, we consider a more complex, hierarchical equality problem, but this requires vastly more data. However, using a pretrained equality network as a modular component of this larger task leads to good performance with no task-specific training. Overall, these findings indicate that neural models are able to solve equality-based reasoning tasks, suggesting that essential aspects of symbolic reasoning can emerge from data-driven, non-symbolic learning processes.
-\end{abstract}
-
-\dates{This manuscript was compiled on \today}
-\doi{\url{www.pnas.org/cgi/doi/10.1073/pnas.XXXXXXXXXX}}
-
-\begin{document}
-
-\maketitle
-\thispagestyle{firststyle}
-\ifthenelse{\boolean{shortarticle}}{\ifthenelse{\boolean{singlecolumn}}{\abscontentformatted}{\abscontent}}{}
-
-% If your first paragraph (i.e. with the \dropcap) contains a list environment (quote, quotation, theorem, definition, enumerate, itemize...), the line after the list may have some extra indentation. If this is the case, add \parshape=0 to the end of the list environment.
-
-% \section{Introduction}\label{sec:introduction}
 
 \dropcap{O}ne of the key components of human intelligence is our ability to reason about abstract relations between stimuli. Many of the most unremarkable human activities -- scheduling a meeting, following traffic signs, assembling furniture -- require a fluency with abstraction and relational reasoning that is unmatched in nonhuman animals. An influential perspective on human uniqueness holds that relational concepts are critical to higher-order cognition \citep[e.g.,][]{Gentner:2003}. By far the most common case study of abstract relations has been equality.\footnote{We use the term ``equality'' here, though different literatures have also used ``identity.''} Equality is a valuable case study because it is simple and ubiquitous, but also completely abstract in the sense that it can be evaluated regardless of the identity of the stimuli being judged.
 
@@ -730,22 +598,10 @@ Earlier debates about the nature of equality computations centered around the qu
  % By contrast, the literature on relational learning in neural networks is currently limited to feature representations, and does not consider any non-featural representations where property values are encoded implicitly with abstract structures. For example, all of the experiments reviewed in \cite{alhama:2019} use feature representations, meaning that each vector unit explicitly contains the value of a property. Their negative conclusions about relational learning in neural networks hold only for networks using such representations.
 
 
-
-\matmethods{Please describe your materials and methods here. This can be more than one paragraph, and may contain subsections and equations as required. Authors should include a statement in the methods section describing how readers will be able to access the data in the paper.
-
-\subsection*{Subsection for Method}
-Example text for subsection.
+\ifthenelse{
+  \equal{\papermode}{pnas}
+}{
+  \input{footer-pnas}
+}{
+  \input{footer-arxiv}
 }
-
-\showmatmethods{} % Display the Materials and Methods section
-
-\acknow{This work is supported in part by a Facebook Robust Deep Learning for Natural Language Processing Research Award and by the McDonnell Foundation grant ``The Ontogeny of Propositional Thought''.}
-
-\showacknow{} % Display the acknowledgments section
-
-% Bibliography
-\bibliography{relational-learning-bib}
-
-% \input{relational-learning-supplement.tex}
-
-\end{document}
