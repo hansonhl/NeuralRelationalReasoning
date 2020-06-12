@@ -38,7 +38,7 @@ These learning signatures appear to be a close match to the kind of learning exh
 \label{fig:tasks}
 \end{figure}
 
-We revisit this debate here, adopting stringent criteria for generalization and considering a broader range of representations across three models. We model three cases of identity-based reasoning that have featured prominently in discussions of the role of symbols in relational reasoning (\figref{fig:tasks}): (1) learning to discriminate pairs of objects that exemplify the relation \emph{same} or \emph{different}, (2) learning sequences with repeated \emph{same} elements \cite{marcus:1999}, and (3) learning to distinguish hierarchical \emph{same} and \emph{different} relations in a context with pairs of pairs exemplifying these relations \cite{Premack:1983}. This last problem is more challenging and requires vastly more data. We show how using pretrained representations -- an active area of development in recent artificial intelligence research \cite{CollobertWeston:2011,Mikolov-etal:2013,pennington-socher-manning:2014:EMNLP2014,Peters-etal:2018,Devlin-etal:2019} -- can help achieve far faster learning.
+We revisit this debate here, adopting stringent criteria for generalization and considering a broader range of representations across three models. We model three cases of identity-based reasoning that have featured prominently in discussions of the role of symbols in relational reasoning (\figref{fig:tasks}): (1) learning to discriminate pairs of objects that exemplify the relation \emph{same} or \emph{different}, (2) learning sequences with repeated \emph{same} elements \cite{marcus:1999}, and (3) learning to distinguish hierarchical \emph{same} and \emph{different} relations in a context with pairs of pairs exemplifying these relations \cite{Premack:1983}. This last problem is more challenging and requires vastly more data. We show how using pretraining -- an active area of development in recent artificial intelligence research \cite{CollobertWeston:2011,Mikolov-etal:2013,pennington-socher-manning:2014:EMNLP2014,Peters-etal:2018,Devlin-etal:2019} -- can help achieve far faster learning.
 
 Across these three models, we find strong support for their ability to learn equality relations. These results should serve to revise the conclusions of the earlier debate. Marcus and colleagues \cite{marcus:1999,marcus:2001} showed experimentally that neural networks using feature representations cannot generalize to binary features unseen in training. We agree with this claim (and support it with a direct mathematical argument in \appref{app:generalization}). However, they concluded from this result that neural networks will need to have primitive symbolic operators to solve hard relational reasoning tasks. On this point, we disagree. Our experiments show that networks without these primitives can solve a range of these tasks, as long as they use non-featural representations. Overall, these findings suggest that essential aspects of symbolic reasoning can emerge from entirely data-driven, non-symbolic learning processes.
 
@@ -221,12 +221,22 @@ axis lines=middle,
  xtick={-2,-1,0,1,2},
  ytick={-2,-1,0,1,2}
 ]
- \node[regular polygon,regular polygon sides=3, fill=blue!100,inner sep=2pt] at (axis cs:-0.35932082, 0.17664503) {};
- \node[regular polygon,regular polygon sides=3, fill=red!100,inner sep=2pt] at (axis cs: 0.23422007, -0.23213634) {};
- \node[regular polygon,regular polygon sides=4, fill=blue!100] at (axis cs:0.4148342 , 0.02179685) {};
- \node[regular polygon,regular polygon sides=4, fill=red!100] at (axis cs:-0.19870198, -0.02996263) {};
- \node[regular polygon,regular polygon sides=5, fill=blue!100] at (axis cs: 0.23975432 , 0.40730593) {};
- \node[regular polygon,regular polygon sides=5, fill=red!100] at (axis cs:0.49842966 , 0.17170991) {};
+\node[regular polygon,regular polygon sides=3, fill=red!100,inner sep=2pt] at (axis cs:0.25644314, 0.12540874) {};
+\node[regular polygon,regular polygon sides=4, fill=blue!100] at (axis cs:0.25999054, -0.29644176) {};
+\node[regular polygon,regular polygon sides=5, fill=red!100] at (axis cs:0.049219638, 0.42767277) {};
+\node[regular polygon,regular polygon sides=6, fill=blue!100] at (axis cs:-0.061883904, 0.19825003) {};
+\node[regular polygon,regular polygon sides=7, fill=red!100] at (axis cs:-0.37857392, 0.47314683) {};
+\node[regular polygon,regular polygon sides=3, fill=blue!100,inner sep=2pt] at (axis cs:0.10887167, -0.26070255) {};
+\node[regular polygon,regular polygon sides=4, fill=red!100] at (axis cs:-0.34162185, 0.050839007) {};
+\node[regular polygon,regular polygon sides=5, fill=blue!100] at (axis cs:0.05225141, -0.4067908) {};
+\node[regular polygon,regular polygon sides=6, fill=red!100] at (axis cs:0.49225715, 0.4129299) {};
+\node[regular polygon,regular polygon sides=7, fill=blue!100] at (axis cs:-0.038552105, -0.38253385) {};
+ %\node[regular polygon,regular polygon sides=3, fill=blue!100,inner sep=2pt] at (axis cs:-0.35932082, 0.17664503) {};
+ %\node[regular polygon,regular polygon sides=3, fill=red!100,inner sep=2pt] at (axis cs: 0.23422007, -0.23213634) {};
+ %\node[regular polygon,regular polygon sides=4, fill=blue!100] at (axis cs:0.4148342 , 0.02179685) {};
+ %\node[regular polygon,regular polygon sides=4, fill=red!100] at (axis cs:-0.19870198, -0.02996263) {};
+ %\node[regular polygon,regular polygon sides=5, fill=blue!100] at (axis cs: 0.23975432 , 0.40730593) {};
+ %\node[regular polygon,regular polygon sides=5, fill=red!100] at (axis cs:0.49842966 , 0.17170991) {};
 \end{axis}
 \end{tikzpicture}
  \caption{The matrix in \figref{fig:reps:random} (before pretraining).}
@@ -247,12 +257,22 @@ axis lines=middle,
  xtick={-2,-1,0,1,2},
  ytick={-2,-1,0,1,2}
 ]
- \node[regular polygon,regular polygon sides=3, fill=blue!100,inner sep=2pt] at (axis cs:-1.2906312,  0.36732233]) {};
- \node[regular polygon,regular polygon sides=3, fill=red!100,inner sep=2pt] at (axis cs: -0.09487347, -1.1454606) {};
- \node[regular polygon,regular polygon sides=4, fill=blue!100] at (axis cs:-0.8569037 , 1.1844875) {};
- \node[regular polygon,regular polygon sides=4, fill=red!100] at (axis cs: 0.56387985, -0.61090606) {};
- \node[regular polygon,regular polygon sides=5, fill=blue!100] at (axis cs:-0.94791865, 2.0959575) {};
- \node[regular polygon,regular polygon sides=5, fill=red!100] at (axis cs:1.2290089, -0.08361815) {};
+\node[regular polygon,regular polygon sides=3, fill=red!100,inner sep=2pt] at (axis cs:0.043389633, 0.8164206) {};
+\node[regular polygon,regular polygon sides=4, fill=blue!100] at (axis cs:-0.7053148, -1.812479) {};
+\node[regular polygon,regular polygon sides=5, fill=red!100] at (axis cs:-0.19551103, 0.4328718) {};
+\node[regular polygon,regular polygon sides=6, fill=blue!100] at (axis cs:1.6731963, -1.0493283) {};
+\node[regular polygon,regular polygon sides=7, fill=red!100] at (axis cs:-0.19127868, -0.034780912) {};
+\node[regular polygon,regular polygon sides=3, fill=blue!100,inner sep=2pt] at (axis cs:-0.40698338, -0.91700864) {};
+\node[regular polygon,regular polygon sides=4, fill=red!100] at (axis cs:-0.24272422, 0.16861145) {};
+\node[regular polygon,regular polygon sides=5, fill=blue!100] at (axis cs:0.88247913, -0.13587654) {};
+\node[regular polygon,regular polygon sides=6, fill=red!100] at (axis cs:-0.075923756, 0.29488102) {};
+\node[regular polygon,regular polygon sides=7, fill=blue!100] at (axis cs:2.1035564, -2.6820786) {};
+ %\node[regular polygon,regular polygon sides=3, fill=blue!100,inner sep=2pt] at (axis cs:-1.2906312,  0.36732233]) {};
+ %\node[regular polygon,regular polygon sides=3, fill=red!100,inner sep=2pt] at (axis cs: -0.09487347, -1.1454606) {};
+ %\node[regular polygon,regular polygon sides=4, fill=blue!100] at (axis cs:-0.8569037 , 1.1844875) {};
+ %\node[regular polygon,regular polygon sides=4, fill=red!100] at (axis cs: 0.56387985, -0.61090606) {};
+ %\node[regular polygon,regular polygon sides=5, fill=blue!100] at (axis cs:-0.94791865, 2.0959575) {};
+ %\node[regular polygon,regular polygon sides=5, fill=red!100] at (axis cs:1.2290089, -0.08361815) {};
 \end{axis}
 \end{tikzpicture}
  \caption{The matrix in \figref{fig:reps:pretrained} (after pretraining).}
@@ -375,7 +395,7 @@ During testing, this model is tasked with categorizing inputs unseen during trai
 \begin{subfigure}[t]{0.48\linewidth}
  \centering
  \includegraphics[width=1\linewidth]{../fig/equality-pretrain-compare-train_size-pretrained-embed_dim=None.pdf}
- \caption{\update{Results where random representations are grounded in property domains of color and number of sides via pretraining learning tasks. The `no pretraining' model is the best of the models at left (10-dimensional embeddings, 100-dimensional hidden layers), repeated to facilitate comparisons. The pretraining models use those same dimensionalities.}}
+ \caption{\update{Results where random representations are grounded in a number of property domains via pretraining learning tasks. The `no pretraining' model is the best of the models at left (10-dimensional embeddings, 100-dimensional hidden layers), repeated to facilitate comparisons. The pretraining models use those same dimensionalities.}}
  \label{fig:basic-equality-pretrain}
 \end{subfigure}
 \caption{Same--different results with and without pretraining.}
