@@ -1,9 +1,7 @@
 import numpy as np
 import random
+from utils import randvec
 
-
-def randvec(embed_dim=50, lower=-0.5, upper=0.5):
-    return np.array([random.uniform(lower, upper) for i in range(embed_dim)])
 
 
 class EqualityDataset:
@@ -113,7 +111,7 @@ class PremackDataset:
     NEG_LABEL = 0
 
     def __init__(self, embed_dim=50, n_pos=500, n_neg=500,
-                 flatten_root=True, flatten_leaves=True,intermediate=False):
+                 flatten_root=True, flatten_leaves=True, intermediate=False):
         """Creates Premack datasets. Conceptually, the instances are
 
         (((a, b), (c, d)), label)
@@ -172,7 +170,7 @@ class PremackDataset:
         for n, v in ((n_pos, 'n_pos'), (n_neg, 'n_neg')):
             if n % 2 != 0:
                 raise ValueError(
-                    f"The value of {v} must be even to ensure an balanced "
+                    f"The value of {v} must be even to ensure a balanced "
                     f"split across its two sub-types of the {v} class.")
 
         self.n_same_same = int(n_pos / 2)
@@ -218,16 +216,10 @@ class PremackDataset:
 
         """
         self.data = []
-        if self.intermediate:
-            self.data += [(x,[self.POS_LABEL, self.POS_LABEL,y]) for x,y in self._create_same_same()]
-            self.data += [(x,[self.NEG_LABEL, self.NEG_LABEL,y]) for x,y in self._create_diff_diff()]
-            self.data += [(x,[self.NEG_LABEL, self.POS_LABEL,y]) for x,y in self._create_same_diff()]
-            self.data += [(x,[self.POS_LABEL, self.NEG_LABEL,y]) for x,y in self._create_diff_same()]         
-        else:
-            self.data += self._create_same_same()
-            self.data += self._create_diff_diff()
-            self.data += self._create_same_diff()
-            self.data += self._create_diff_same()
+        self.data += self._create_same_same()
+        self.data += self._create_diff_diff()
+        self.data += self._create_same_diff()
+        self.data += self._create_diff_same()
         random.shuffle(self.data)
         data = self.data.copy()
         if self.flatten_root or self.flatten_leaves:
@@ -303,12 +295,5 @@ class PremackDatasetLeafFlattened(PremackDataset):
             n_pos=n_pos,
             n_neg=n_neg,
             flatten_leaves=True,
-            flatten_root=False)
-
-class PremackDatasetIntermediate(PremackDataset):
-    def __init__(self, embed_dim=50, n_pos=500, n_neg=500):
-        super().__init__(
-            embed_dim=embed_dim,
-            n_pos=n_pos,
-            n_neg=n_neg,
-            intermediate=True)
+            flatten_root=False,
+            intermediate=False)

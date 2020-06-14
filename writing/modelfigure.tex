@@ -1,0 +1,375 @@
+
+\newcommand{\inputcolor}{black!20}
+\newcommand{\outputcolor}{red!40}
+\newcommand{\hiddencolor}{blue!40}
+\newcommand{\hiddencolortwo}{orange!40}
+\newcommand{\colorlabel}{green!40}
+\newcommand{\compare}{cosine}
+
+
+
+
+\begin{figure*}[t!]
+  \begin{subfigure}[t]{0.25\textwidth}
+  \centering
+      \resizebox{92pt}{!}{%
+\begin{tikzpicture}[
+    % GLOBAL CFG
+    font=\sf \large,
+    >=LaTeX,
+    % Styles
+    rep/.style={% For representations
+        rectangle, 
+        rounded corners=3mm, 
+        draw,
+        very thick,
+        minimum height =1cm, 
+        minimum width=1.61cm
+        },
+    function/.style={%For functions
+        ellipse,
+        draw,
+        inner sep=1pt
+        },
+    gt/.style={% For internal inputs
+        rectangle,
+        draw,
+        minimum width=5mm,
+        minimum height=4mm,
+        inner sep=1pt
+        },
+    function/.style={
+        rectangle,
+        draw,
+        minimum width=5mm,
+        minimum height=4mm,
+        inner sep=1pt
+        },
+    arrowconcat/.style={% Arrows for concatenation
+        rounded corners=.25cm,
+        dashed,
+        thick,
+        ->, 
+        },
+    arrowfunction/.style={% Arrows for concatenation
+        rounded corners=.25cm,
+        thick,
+        ->,       
+        }
+    ]
+
+%Start drawing the thing...    
+    % Draw the cell: 
+    \node [rep, fill=\inputcolor] (input1) at (-1.5,1.5){$x_1$} ;
+    \node [rep, fill=\inputcolor] (input2) at (1.5,1.5){$x_2$} ;
+    \node [rep, fill=\inputcolor] (concat) at (0,3){$x_1;x_2$} ;
+    \draw [arrowconcat] (input1) -- (concat);
+    \draw [arrowconcat] (input2) -- (concat);  
+    
+    
+    \node [rep, fill=\hiddencolor] (hidden) at (0,5){$h$} ;
+    \node [gt, minimum width=1cm] (relu) at (0,4-0.1) {$\ReLU$};
+    \draw [arrowfunction] (concat) -- (relu) -- (hidden); 
+    
+    
+    \node [rep,fill=\outputcolor] (output) at (0,7){$y$} ;
+    \node [gt, minimum width=1cm] (softmax) at (0,6-0.1) {$\softmax$};
+    \draw [arrowfunction] (hidden) -- (softmax) -- (output); 
+
+\end{tikzpicture}
+}
+    \caption{A single layer network computing equality.}
+    \label{fig:models:equality}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.35\textwidth}
+    \centering
+      \resizebox{150pt}{!}{%
+\begin{tikzpicture}[
+    % GLOBAL CFG
+    font=\sf \large,
+    >=LaTeX,
+    % Styles
+    rep/.style={% For representations
+        rectangle, 
+        rounded corners=3mm, 
+        draw,
+        very thick,
+        minimum height =1cm, 
+        minimum width=1.61cm
+        },
+    function/.style={%For functions
+        ellipse,
+        draw,
+        inner sep=1pt
+        },
+    gt/.style={% For internal inputs
+        rectangle,
+        draw,
+        minimum width=5mm,
+        minimum height=4mm,
+        inner sep=1pt
+        },
+    function/.style={
+        rectangle,
+        draw,
+        minimum width=5mm,
+        minimum height=4mm,
+        inner sep=1pt
+        },
+    arrowconcat/.style={% Arrows for concatenation
+        rounded corners=.25cm,
+        dashed,
+        thick,
+        ->, 
+        },
+    arrowfunction/.style={% Arrows for concatenation
+        rounded corners=.25cm,
+        thick,
+        ->,       
+        }
+    ]
+
+%Start drawing the thing...    
+    % Draw the cell: 
+    \node [rep, fill=\inputcolor] (input1) at (-3,1.5){$x_1$} ;
+    \node [rep, fill=\inputcolor] (input2) at (-1,1.5){$x_2$} ;
+    \node [rep, fill=\inputcolor] (input3) at (1,1.5){$x_3$} ;
+    \node [rep, fill=\inputcolor] (input4) at (3,1.5){$x_4$} ;
+    \node [rep, fill=\inputcolor] (concat) at (0,3){$x_1;x_2;x_3;x_4$} ;
+    \draw [arrowconcat] (input1) -- (concat);
+    \draw [arrowconcat] (input2) -- (concat);
+    \draw [arrowconcat] (input3) -- (concat);
+    \draw [arrowconcat] (input4) -- (concat);  
+    
+    
+    \node [rep, fill=\hiddencolor] (hidden) at (0,5){$h_1$} ;
+    \node [gt, minimum width=1cm] (relu) at (0,4-0.1) {$\ReLU$};
+    \draw [arrowfunction] (concat) -- (relu) -- (hidden); 
+    
+    \node [rep, fill=\hiddencolortwo] (hidden2) at (0,7){$h_2$} ;
+    \node [gt, minimum width=1cm] (relu2) at (0,6-0.1) {$\ReLU$};
+    \draw [arrowfunction] (hidden) -- (relu2) -- (hidden2); 
+    
+    
+    \node [rep,fill=\outputcolor] (output) at (0,9){$y$} ;
+    \node [gt, minimum width=1cm] (softmax) at (0,8-0.1) {$\softmax$};
+    \draw [arrowfunction] (hidden2) -- (softmax) -- (output); 
+
+\end{tikzpicture}
+}
+    \caption{A two layer network computing hierarchical equality.}
+    \label{fig:models:premack-deep}
+  \end{subfigure}
+  \begin{subfigure}[t]{0.4\textwidth}
+    \centering
+      \resizebox{200pt}{!}{%
+\begin{tikzpicture}[
+    % GLOBAL CFG
+    font=\sf \large,
+    >=LaTeX,
+    % Styles
+    rep/.style={% For representations
+        rectangle, 
+        rounded corners=3mm, 
+        draw,
+        very thick,
+        minimum height =1cm, 
+        minimum width=1.61cm
+        },
+    function/.style={%For functions
+        ellipse,
+        draw,
+        inner sep=1pt
+        },
+    gt/.style={% For internal inputs
+        rectangle,
+        draw,
+        minimum width=5mm,
+        minimum height=4mm,
+        inner sep=1pt
+        },
+    function/.style={
+        rectangle,
+        draw,
+        minimum width=5mm,
+        minimum height=4mm,
+        inner sep=1pt
+        },
+    arrowconcat/.style={% Arrows for concatenation
+        rounded corners=.25cm,
+        dashed,
+        thick,
+        ->, 
+        },
+    arrowfunction/.style={% Arrows for concatenation
+        rounded corners=.25cm,
+        thick,
+        ->,       
+        }
+    ]
+
+%Start drawing the thing...    
+    % Draw the cell: 
+    \node [rep, fill=\inputcolor] (input1) at (-4.5,1.5){$x_1$} ;
+    \node [rep, fill=\inputcolor] (input2) at (-1.5,1.5){$x_2$} ;
+    \node [rep, fill=\inputcolor] (concat) at (-3,3){$x_1;x_2$} ;
+    \draw [arrowconcat] (input1) -- (concat);
+    \draw [arrowconcat] (input2) -- (concat);  
+    
+    
+    \node [rep, fill=\hiddencolor] (hidden) at (-3,5){$h_1$} ;
+    \node [gt, minimum width=1cm] (relu1) at (-3,4-0.1) {$\ReLU$};
+    \draw [arrowfunction] (concat) -- (relu1) -- (hidden);
+    
+    
+    \node [rep, fill=\inputcolor] (input3) at (4.5,1.5){$x_3$} ;
+    \node [rep, fill=\inputcolor] (input4) at (1.5,1.5){$x_4$} ;
+    \node [rep, fill=\inputcolor] (concat2) at (3,3){$x_3;x_4$} ;
+    \draw [arrowconcat] (input3) -- (concat2);
+    \draw [arrowconcat] (input4) -- (concat2);  
+    
+    
+    \node [rep, fill=\hiddencolor] (hidden2) at (3,5){$h_2$} ;
+    \node [gt, minimum width=1cm] (relu2) at (3,4-0.1) {$\ReLU$};
+    \draw [arrowfunction] (concat2) -- (relu2) -- (hidden2);
+    
+    
+    \node [rep,fill=\hiddencolor] (hiddenconcat) at (0,6){$h_1;h_2$};
+    \draw [arrowconcat] (hidden2) -- (hiddenconcat);
+    \draw [arrowconcat] (hidden) -- (hiddenconcat);
+    
+    
+    \node [rep, fill=\hiddencolor] (hidden3) at (0,8){$h_3$} ;
+    \node [gt, minimum width=1cm] (relu3) at (0,7-0.1) {$\ReLU$};
+    \draw [arrowfunction] (hiddenconcat) -- (relu3) -- (hidden3);
+    
+    
+    \node [rep,fill=\outputcolor] (output) at (0,10){$y$} ;
+    \node [gt, minimum width=1cm] (softmax) at (0,9-0.1) {$\softmax$};
+    \draw [arrowfunction] (hidden3) -- (softmax) -- (output); 
+
+\end{tikzpicture}
+}
+    \caption{A single layer network pretrained on equality computing hierarchical equality.}
+    \label{fig:models:premack}
+  \end{subfigure}
+  \newline
+  \begin{subfigure}[t]{1.0\textwidth}
+    \centering
+    \resizebox{400pt}{!}{%
+\begin{tikzpicture}[
+    % GLOBAL CFG
+    font=\sf \large,
+    >=LaTeX,
+    % Styles
+    rep/.style={% For representations
+        rectangle, 
+        rounded corners=3mm, 
+        draw,
+        very thick,
+        minimum height =1cm, 
+        minimum width=1.61cm
+        },
+    function/.style={%For functions
+        ellipse,
+        draw,
+        inner sep=1pt
+        },
+    gt/.style={% For internal inputs
+        rectangle,
+        draw,
+        minimum width=5mm,
+        minimum height=4mm,
+        inner sep=1pt
+        },
+    function/.style={
+        rectangle,
+        draw,
+        minimum width=5mm,
+        minimum height=4mm,
+        inner sep=1pt
+        },
+    arrowconcat/.style={% Arrows for concatenation
+        rounded corners=.25cm,
+        dashed,
+        thick,
+        ->, 
+        },
+    arrowfunction/.style={% Arrows for concatenation
+        rounded corners=.25cm,
+        thick,
+        ->,       
+        }
+    ]
+
+%Start drawing the thing...    
+    % Draw the cell: 
+    \node [rep, fill=\inputcolor] (input1) at (-10,4){$<s>$} ;
+    \node [rep, fill=\inputcolor] (input2) at (-6,4){$A$} ;
+    \node [rep, fill=\inputcolor] (input3) at (-2,4){$B$} ;
+    \node [rep, fill=\inputcolor] (input4) at (2,4){$A$} ;
+
+    \node [rep, fill=\hiddencolor] (hidden0) at (-10,6){$h_0$} ;    
+    \node [rep, fill=\hiddencolor] (hidden1) at (-6,6){$h_1$} ;
+    \node [rep, fill=\hiddencolor] (hidden2) at (-2,6){$h_2$} ;
+    \node [rep, fill=\hiddencolor] (hidden3) at (2,6){$h_3$} ;
+    \node [rep, fill=\hiddencolor] (hidden4) at (6,6){$h_4$} ;
+    
+    \node [gt] (LSTM0) at (-8,6){$\LSTM$} ;
+    \node [gt] (LSTM1) at (-4,6){$\LSTM$} ;
+    \node [gt] (LSTM2) at (0,6){$\LSTM$} ;
+    \node [gt] (LSTM3) at (4,6){$\LSTM$} ;
+    
+    \node [rep, fill=\outputcolor] (output1) at (-6,8){$y_1$} ;
+    \node [rep, fill=\outputcolor] (output2) at (-2,8){$y_2$} ;
+    \node [rep, fill=\outputcolor] (output3) at (2,8){$y_3$} ;
+    \node [rep, fill=\outputcolor] (output4) at (6,8){$y_4$} ;
+
+    \node [gt] (compare1) at (-6,9.5){$\compare$} ;
+    \node [gt] (compare2) at (-2,9.5){$\compare$} ;
+    \node [gt] (compare3) at (2,9.5){$\compare$} ;
+    \node [gt] (compare4) at (6,9.5){$\compare$} ;
+    
+    \node [rep, fill=\colorlabel] (label1) at (-6,11){$A$} ;
+    \node [rep, fill=\colorlabel] (label2) at (-2,11){$B$} ;
+    \node [rep, fill=\colorlabel] (label3) at (2,11){$A$} ;
+    \node [rep, fill=\colorlabel] (label4) at (6,11){$</s>$} ;
+
+    \draw [arrowfunction] (label1) -- (compare1); 
+    \draw [arrowfunction] (label2) -- (compare2); 
+    \draw [arrowfunction] (label3) -- (compare3); 
+    \draw [arrowfunction] (label4) -- (compare4); 
+    
+    \draw [arrowfunction] (output1) -- (compare1); 
+    \draw [arrowfunction] (output2) -- (compare2); 
+    \draw [arrowfunction] (output3) -- (compare3); 
+    \draw [arrowfunction] (output4) -- (compare4); 
+
+    \draw [arrowfunction] (hidden1) -- (output1); 
+    \draw [arrowfunction] (hidden2) -- (output2); 
+    \draw [arrowfunction] (hidden3) -- (output3); 
+    \draw [arrowfunction] (hidden4) -- (output4); 
+
+    \draw [thick] (input1) to[out=0,in=-180, distance=1cm] (LSTM0);
+    \draw [thick] (input2) to[out=0,in=-180, distance=1cm] (LSTM1);
+    \draw [thick] (input3) to[out=0,in=-180, distance=1cm] (LSTM2);
+    \draw [thick] (input4) to[out=0,in=-180, distance=1cm] (LSTM3);
+
+    \draw [arrowfunction] (hidden0) -- (LSTM0) -- (hidden1); 
+    \draw [arrowfunction] (hidden1) -- (LSTM1)-- (hidden2); 
+    \draw [arrowfunction] (hidden2) -- (LSTM2)-- (hidden3); 
+    \draw [arrowfunction] (hidden3) -- (LSTM3)-- (hidden4); 
+    
+    \draw[->,dashed,thick] (label1) to[out=0,in=-90, distance=1.99cm] (input2);
+    \draw[->,dashed,thick] (label2) to[out=0,in=-90, distance=1.99cm] (input3);
+    \draw[->,dashed,thick] (label3) to[out=0,in=-90, distance=1.99cm] (input4);
+
+
+\end{tikzpicture}
+}
+    \caption{A recursive LSTM network producing ABA sequences.}
+    \label{fig:reps:sequence}
+  \end{subfigure}
+  \caption{The models for our three tasks.}
+  \label{fig:models}
+\end{figure*}

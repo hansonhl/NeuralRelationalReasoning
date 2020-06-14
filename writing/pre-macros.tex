@@ -1,0 +1,107 @@
+%=====================================================================
+%============================ our packages ===========================
+
+\usepackage{color}
+\definecolor{black}{rgb}{0,0,0}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing,positioning, fit, arrows.meta, shapes}
+\usetikzlibrary{shapes}
+\usepackage{subcaption}
+\usepackage{caption}
+\usepackage{pgfplots}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage{float}
+
+%=====================================================================
+%============================= citations =============================
+
+
+% Flexible sec/fig/tbl/def cross-refs.
+\newcommand{\Secref}[1]{Section~\ref{#1}}
+\newcommand{\secref}[1]{Section~\ref{#1}}
+\newcommand{\dashsecref}[2]{Sections~\ref{#1}--\ref{#2}}
+
+\newcommand{\Defref}[1]{Definition~\ref{#1}}
+\newcommand{\defref}[1]{Definition~\ref{#1}}
+\newcommand{\Defrefc}[2]{\Defref{#1}, clause~\ref{#2}}
+\newcommand{\defrefc}[2]{\defref{#1}, clause~\ref{#2}}
+
+\newcommand{\Figref}[1]{Figure~\ref{#1}}
+\newcommand{\figref}[1]{Figure~\ref{#1}}
+\newcommand{\dashfigref}[2]{Figures~\ref{#1}--\ref{#2}}
+\newcommand{\Tabref}[1]{Table~\ref{#1}}
+\newcommand{\tabref}[1]{Table~\ref{#1}}
+
+\newcommand{\Appref}[1]{Appendix~\ref{#1}}
+\newcommand{\appref}[1]{Appendix~\ref{#1}}
+
+% In-text citations
+\newcommand{\posscitet}[1]{\citeauthor{#1}'s~(\citeyear{#1})}
+\newcommand{\sposscitet}[1]{\citeauthor{#1}'~(\citeyear{#1})}
+\newcommand{\possciteauthor}[1]{\citeauthor{#1}'s}
+\newcommand{\spossciteauthor}[1]{\citeauthor{#1}'}
+\newcommand{\pgposscitet}[2]{\citeauthor{#1}'s~(\citeyear{#1}:~#2)}
+\newcommand{\secposscitet}[2]{\citeauthor{#1}'s~(\citeyear{#1}:~$\S$#2)}
+\newcommand{\pgcitealt}[2]{\citealt{#1}:~#2}
+\newcommand{\seccitealt}[2]{\citealt{#1}:~$\S$#2}
+\newcommand{\pgcitep}[2]{(\citealt{#1}:~#2)}
+\newcommand{\seccitep}[2]{(\citealt{#1}:~$\S$#2)}
+\newcommand{\pgcitet}[2]{\citeauthor{#1}~(\citeyear{#1}:~#2)}
+\newcommand{\seccitet}[2]{\citeauthor{#1}~(\citeyear{#1}:~$\S$#2)}
+
+% Examples:
+\newcommand{\eg}[1]{(\ref{#1})}
+\newcommand{\dasheg}[2]{\eg{#1}--\eg{#2}}
+\newcommand{\subeg}[2]{(\ref{#1}\ref{#2})}
+\newcommand{\dblsubeg}[3]{(\ref{#1}\ref{#2},~\ref{#3})}
+\newcommand{\dashsubeg}[3]{(\ref{#1}\ref{#2}--\ref{#3})}
+
+%=====================================================================
+%========================= font manipulation =========================
+
+\newcommand{\word}[1]{\emph{#1}}
+\newcommand{\tech}[1]{\emph{#1}}
+\newcommand{\highlight}[1]{\textbf{#1}}
+
+\newcommand{\blue}[1]{{\color{blue}#1}}
+
+\definecolor{ourgreen}{HTML}{4D8951}
+\definecolor{darkblue}{HTML}{0499CC}
+\definecolor{darkred}{HTML}{8B0000}
+\definecolor{superlightgray}{HTML}{B8B8B8}
+
+\newcommand{\poscell}[1]{\fcolorbox{white}{ourgreen}{#1}}
+\newcommand{\negcell}[1]{\fcolorbox{white}{superlightgray}{#1}}
+
+
+% \newcommand{\update}[1]{{\color{darkblue}#1}}
+% \newcommand{\updatea}[1]{{\color{darkred}#1}}
+% \newcommand{\updateb}[1]{{\color{ourgreen}#1}}
+
+\newcommand{\update}[1]{#1}
+\newcommand{\updatea}[1]{#1}
+\newcommand{\updateb}[1]{#1}
+
+%=====================================================================
+%================================ math ===============================
+
+\newcommand{\softmax}{\mathbf{softmax}}
+\DeclareMathOperator{\ReLU}{ReLU}
+\newcommand{\identity}{\mathbb{I}}
+\newcommand{\LSTM}{\textbf{LSTM}}
+\newcommand{\wupdate}{\mathrel{{+}{=}}}
+
+
+
+\newcommand{\inputcolor}{black!20}
+\newcommand{\outputcolor}{red!40}
+\newcommand{\hiddencolor}{blue!40}
+\newcommand{\hiddencolortwo}{orange!40}
+\newcommand{\colorlabel}{green!40}
+\newcommand{\compare}{\emph{Euclidean}}

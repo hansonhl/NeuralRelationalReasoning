@@ -1,6 +1,8 @@
+from relu_lstm import ReLULSTM
 import torch
 import torch.nn as nn
 import sys
+from utils import progress_bar
 
 
 START_SYMBOL = "<s>"
@@ -34,7 +36,6 @@ class FuzzyPatternModule(nn.Module):
         else:
             self.output_activation = lambda x: x
         self.output_layer = nn.Linear(self.hidden_dim, self.embed_dim)
-        self.classifier_layer = nn.Linear(self.embed_dim, 2)
 
     def forward(self, seq, hidden):
         output, hidden = self.rnn(seq, hidden)
@@ -47,8 +48,9 @@ class FuzzyPatternLM:
             vocab,
             embed_dim,
             hidden_dim,
-            rnn_cell_class=nn.LSTM,
+            rnn_cell_class=ReLULSTM,
             num_layers=1,
+            embedding=None,
             alpha=0,
             dropout=0,
             eta=0.05,
@@ -63,6 +65,7 @@ class FuzzyPatternLM:
         self.hidden_dim = hidden_dim
         self.rnn_cell_class = rnn_cell_class
         self.num_layers = num_layers
+        self._embedding = embedding
         self.alpha = alpha
         self.dropout = dropout
         self.eta = eta
@@ -70,27 +73,37 @@ class FuzzyPatternLM:
         self.warm_start = warm_start
         self.output_activation = output_activation
         self.verbose = verbose
-        self.model = FuzzyPatternModule(
-            vocab_size=self.vocab_size,
-            embed_dim=self.embed_dim,
-            hidden_dim=self.hidden_dim,
-            rnn_cell_class=self.rnn_cell_class,
-            output_activation=self.output_activation,
-            num_layers=self.num_layers,
-            dropout=self.dropout)
         self.optimizer_func = torch.optim.Adam
         self.start_symbol_index = self.vocab.index(START_SYMBOL)
         self.end_symbol_index = self.vocab.index(END_SYMBOL)
-        self.embedding = nn.Embedding(self.vocab_size, self.embed_dim)
-        # Freezing the embedding space seems like it might help
-        # with generalization into new vocabularies:
-        self.embedding.weight.requires_grad = False
         if device is None:
             device = "cuda" if torch.cuda.is_available() else "cpu"
         self.device = torch.device(device)
 
-    def fit(self, X, y=None, eval_func=None):
-        if not self.warm_start or not hasattr(self, "optimizer"):
+    @staticmethod
+    def _define_embedding(embedding, vocab_size, embed_dim):
+        if embedding is None:
+            emb = nn.Embedding(vocab_size, embed_dim)
+            # Freezing the embedding space seems like it might help
+            # with generalization into new vocabularies:
+            emb.weight.requires_grad = False
+            return emb
+        else:
+            embedding = torch.FloatTensor(embedding)
+            return nn.Embedding.from_pretrained(embedding, freeze=True)
+
+    def fit(self, X, eval_func=None, eval_increment=5):
+        if not self.warm_start or not hasattr(self, "model"):
+            self.model = FuzzyPatternModule(
+                vocab_size=self.vocab_size,
+                embed_dim=self.embed_dim,
+                hidden_dim=self.hidden_dim,
+                rnn_cell_class=self.rnn_cell_class,
+                output_activation=self.output_activation,
+                num_layers=self.num_layers,
+                dropout=self.dropout)
+            self.embedding = self._define_embedding(
+                self._embedding, self.vocab_size, self.embed_dim)
             self.optimizer = self.optimizer_func(
                 self.model.parameters(), lr=self.eta, weight_decay=self.alpha)
             self.results = []
@@ -99,33 +112,6 @@ class FuzzyPatternLM:
         X = [[self.vocab.index(c) for c in seq] for seq in X]
         X = torch.LongTensor(X)
 
-        if y is not None:
-            self.fit_classifier(X, y)
-        else:
-            self.fit_lm(X, eval_func=eval_func)
-
-    def fit_classifier(self, X, y):
-        X = self.embedding(X)
-        y = torch.LongTensor(y)
-        loss = nn.CrossEntropyLoss()
-        for iteration in range(1, self.max_iter+1):
-            epoch_error = 0.0
-            hidden, output = self.model(X, hidden=None)
-            logits = self._get_logits(output)
-            err = loss(logits, y)
-            epoch_error += err.item()
-            self.optimizer.zero_grad()
-            err.backward()
-            self.optimizer.step()
-            if self.verbose and iteration % self.verbose == 0:
-                self.progress_bar(f"Epoch {iteration}; err = {epoch_error}")
-
-    def _get_logits(self, output):
-        output = output[:, -1, : ]
-        logits = self.model.classifier_layer(output)
-        return logits
-
-    def fit_lm(self, X, eval_func=None, eval_increment=10):
         # Convert the input into a list of 1-dimensional sequences.
         # This makes each row a batch of individual timesteps, which
         # helps with the recurrence.
@@ -157,7 +143,7 @@ class FuzzyPatternLM:
             self.optimizer.step()
             epoch_error = err.item() / len(X)
             if self.verbose and iteration % self.verbose == 0:
-                self.progress_bar(f"Epoch {iteration}; err = {epoch_error}")
+                progress_bar(f"Epoch {iteration}; err = {epoch_error}")
             if eval_func is not None and iteration % eval_increment == 0:
                 self.model.to("cpu")
                 self.embedding.to("cpu")
@@ -190,30 +176,9 @@ class FuzzyPatternLM:
                     break
             return preds
 
-    def predict_proba(self, X):
-        self.model.eval()
-        with torch.no_grad():
-            X = [[self.vocab.index(c) for c in seq] for seq in X]
-            X = torch.LongTensor(X)
-            X = self.embedding(X)
-            hidden, output = self.model(X, hidden=None)
-            logits = self._get_logits(output)
-            preds = torch.softmax(logits, dim=1).cpu().numpy()
-            return preds
-
-    def predict(self, X):
-        probs = self.predict_proba(X)
-        return probs.argmax(axis=1)
-
     def get_letter_prediction(self, output):
         dists = torch.cdist(self.embedding.weight, output, p=2)
         idx = dists.argmin()
         p = self.vocab[idx.item()]
         output = self.embedding(idx.reshape(1,1))
         return p, output
-
-    @staticmethod
-    def progress_bar(msg):
-        sys.stderr.write('\r')
-        sys.stderr.write(msg)
-        sys.stderr.flush()
