@@ -1,4 +1,3 @@
-
 *.pyc
 
 *.ipynb_checkpoints*
@@ -19,3 +18,5 @@ relational-learning-cogsci2020-supplement.log
 *.out
 
 *.rel
+
+.idea/

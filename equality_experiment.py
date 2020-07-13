@@ -41,6 +41,36 @@ class EqualityExperiment:
         self.grid = list(product(*grid))
         self.test_set_class_size = test_set_class_size
 
+    def run_once(self, embed_dim=None, hidden_dim=None, alpha=None, lr=None):
+
+        embed_dim = self.embed_dims[0] if embed_dim is None else embed_dim
+        hidden_dim = self.hidden_dims[0] if hidden_dim is None else hidden_dim
+        alpha = self.alphas[0] if alpha is None else alpha
+        lr = self.learning_rates[0] if lr is None else lr
+        print(f"Using the first item in grid: embed_dim={embed_dim} hidden_dim={hidden_dim} "
+                  f"alpha={alpha} lr={lr} ...")
+        model = self.get_model(hidden_dim, alpha, lr, embed_dim)
+
+        X_train, X_test, y_train, y_test, test_dataset = \
+            self.get_new_train_and_test_sets(embed_dim)
+
+        print("shape of X_train:", X_train.shape)
+        print("shape of X_test:", X_test.shape)
+
+        model.fit(X_train, y_train)
+        preds = model.predict(X_test)
+        acc = accuracy_score(y_test, preds)
+        print("Accuracy: %.3f" % acc)
+
+        print("number of layers:", len(model.coefs_))
+        print("shape of weights in first layer:", model.coefs_[0].shape)
+        print("shape of weights in second layer:", model.coefs_[1].shape)
+        print("shape of bias in first layer:", model.intercepts_[0].shape)
+        print("shape of bias in second layer:", model.intercepts_[1].shape)
+
+
+        return
+
     def run(self):
         data = []
 
@@ -136,7 +166,7 @@ class EqualityExperiment:
     def get_model(self, hidden_dim, alpha, lr, embed_dim):
         if self.model is None:
             return MLPClassifier(
-                max_iter=1,
+                max_iter=100,
                 hidden_layer_sizes=tuple([hidden_dim] * self.n_hidden),
                 activation='relu',
                 alpha=alpha,
