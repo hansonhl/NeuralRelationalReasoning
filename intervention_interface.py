@@ -1,6 +1,6 @@
-from intervention_model.model import InterventionModel
-from intervention_model.model import ComputationGraphNode as Node
+from intervention.model import InterventionModel
 from torch_equality import TorchEqualityModel
+from intervention.computation_graph import ComputationGraph, GraphNode
 
 import torch
 
@@ -50,3 +50,4 @@ class TorchEqualityIntervention(InterventionModel):
         """ Get a data structure of what downstream vectors are affected by
         one internal vector designated by `name`"""
         pass
+
