@@ -52,8 +52,8 @@ class TorchEqualityModule(torch.nn.Module):
 
     def forward(self, x):
         linear_out = self.linear(x)
-        self.hidden_vec = self.activation(linear_out)
-        logits = self.output(self.hidden_vec)
+        hidden_vec = self.activation(linear_out)
+        logits = self.output(hidden_vec)
         return self.sigmoid(logits)
 
 class TorchEqualityModel:
